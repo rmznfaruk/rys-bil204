@@ -1,13 +1,17 @@
-import React from 'react';
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import MenuYonetimi from './pages/MenuYonetimi'; 
+import MenuYonetimi from "./pages/MenuYonetimi";
+import RaporEkrani from "./pages/RaporEkrani";
 
 function App() {
   return (
-    <div className="App" style={{ backgroundColor: '#1a1a1a', minHeight: '100vh' }}>
-      
-      <MenuYonetimi /> 
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MenuYonetimi />} />
+        <Route path="/rapor" element={<RaporEkrani />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
