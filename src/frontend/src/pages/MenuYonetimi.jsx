@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 
-const MenuYonetimi = () => {
-  const bootstrapLink = document.createElement("link");
-  bootstrapLink.rel = "stylesheet";
-  bootstrapLink.href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css";
-  document.head.appendChild(bootstrapLink);
+const urunStokDurumu = (stok) => {
+  if (stok === 0) return { label: "Tükendi", className: "pill pill--danger" };
+  if (stok < 10) return { label: `Kritik (${stok})`, className: "pill pill--warning" };
+  return { label: `Yeterli (${stok})`, className: "pill pill--success" };
+};
 
+const MenuYonetimi = () => {
   const [urunler, setUrunler] = useState([
     { id: 1, ad: "Adana Kebap", fiyat: "350", kategori: "Ana Yemek", stok: 15 },
     { id: 2, ad: "Mercimek Çorbası", fiyat: "80", kategori: "Çorba", stok: 5 },
@@ -29,115 +30,104 @@ const MenuYonetimi = () => {
   };
 
   return (
-    <div style={{ backgroundColor: "#1a1a1a", minHeight: "100vh", padding: "40px", fontFamily: "Segoe UI" }}>
-      <div className="container shadow-lg p-5 rounded-4" style={{ backgroundColor: "#242424", color: "white" }}>
-        <div className="d-flex justify-content-between align-items-center mb-5 border-bottom pb-3">
-          <div>
-            <h1 className="display-5 fw-bold text-warning">Restoran Menü Paneli</h1>
-            <p className="text-muted mb-0">Ürünlerinizi buradan yönetebilir, fiyat ve stok güncelleyebilirsiniz.</p>
-          </div>
-          <button className="btn btn-warning btn-lg fw-bold shadow" onClick={() => setModalAcik(true)}>
-            + Yeni Ürün Ekle
-          </button>
+    <div className="page-stack">
+      <section className="page-header">
+        <div>
+          <p className="eyebrow">Menü akışı</p>
+          <h1>Menü Yönetimi</h1>
+          <p>Kategori, fiyat ve stok görünümünü tek bakışta izleyin.</p>
         </div>
+        <div className="header-actions">
+          <button className="action-button" onClick={() => setModalAcik(true)}>Yeni Ürün Ekle</button>
+        </div>
+      </section>
 
-        <div className="table-responsive rounded-4 overflow-hidden">
-          <table className="table table-dark table-hover align-middle mb-0">
-            <thead className="table-light">
+      <section className="stats-grid">
+        <article className="surface-card">
+          <p className="eyebrow">Toplam ürün</p>
+          <div className="metric-value">{urunler.length}</div>
+        </article>
+        <article className="surface-card">
+          <p className="eyebrow">Kritik stok</p>
+          <div className="metric-value">{urunler.filter((u) => u.stok > 0 && u.stok < 10).length}</div>
+        </article>
+        <article className="surface-card">
+          <p className="eyebrow">Tükenen ürün</p>
+          <div className="metric-value">{urunler.filter((u) => u.stok === 0).length}</div>
+        </article>
+      </section>
+
+      <article className="surface-card">
+        <h3 className="section-title">Ürün listesi</h3>
+        <div className="table-shell">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="ps-4">Ürün Adı</th>
+                <th>Ürün</th>
                 <th>Kategori</th>
                 <th>Fiyat</th>
-                <th>Stok Durumu</th>
-                <th className="text-center">İşlemler</th>
+                <th>Stok</th>
+                <th>İşlem</th>
               </tr>
             </thead>
             <tbody>
-              {urunler.map((u) => (
-                <tr key={u.id}>
-                  <td className="ps-4 fw-semibold text-warning">{u.ad}</td>
-                  <td><span className="badge bg-secondary p-2">{u.kategori}</span></td>
-                  <td className="fw-bold">{u.fiyat} TL</td>
-                  <td>
-                    {u.stok === 0 ? (
-                      <span className="text-danger fw-bold">Tükendi</span>
-                    ) : u.stok < 10 ? (
-                      <span className="text-warning fw-bold">Kritik ({u.stok})</span>
-                    ) : (
-                      <span className="text-success fw-bold">Yeterli ({u.stok})</span>
-                    )}
-                  </td>
-                  <td className="text-center">
-                    <button className="btn btn-outline-info btn-sm me-2">Düzenle</button>
-                    <button className="btn btn-outline-danger btn-sm" onClick={() => urunSil(u.id)}>Sil</button>
-                  </td>
-                </tr>
-              ))}
+              {urunler.map((urun) => {
+                const stok = urunStokDurumu(urun.stok);
+                return (
+                  <tr key={urun.id}>
+                    <td>{urun.ad}</td>
+                    <td><span className="pill pill--neutral">{urun.kategori}</span></td>
+                    <td>{urun.fiyat} TL</td>
+                    <td><span className={stok.className}>{stok.label}</span></td>
+                    <td className="split-actions">
+                      <button className="ghost-button" type="button">Düzenle</button>
+                      <button className="action-button" type="button" onClick={() => urunSil(urun.id)}>Sil</button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
-      </div>
+      </article>
 
       {modalAcik && (
-        <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.9)" }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content bg-dark text-white border-warning border-2">
-              <div className="modal-header border-secondary">
-                <h5 className="modal-title text-warning">Yeni Ürün Ekle</h5>
-                <button type="button" className="btn-close btn-close-white" onClick={() => setModalAcik(false)} />
-              </div>
-              <form onSubmit={urunEkle}>
-                <div className="modal-body p-4">
-                  <div className="mb-3">
-                    <label className="form-label">Ürün İsmi</label>
-                    <input
-                      type="text"
-                      className="form-control bg-dark text-white border-secondary"
-                      required
-                      onChange={(e) => setYeniUrun({ ...yeniUrun, ad: e.target.value })}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Kategori</label>
-                    <select
-                      className="form-select bg-dark text-white border-secondary"
-                      onChange={(e) => setYeniUrun({ ...yeniUrun, kategori: e.target.value })}
-                    >
-                      <option value="Ana Yemek">Ana Yemek</option>
-                      <option value="Çorba">Çorba</option>
-                      <option value="Tatlı">Tatlı</option>
-                      <option value="İçecek">İçecek</option>
-                    </select>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Fiyat (TL)</label>
-                    <input
-                      type="number"
-                      className="form-control bg-dark text-white border-secondary"
-                      required
-                      onChange={(e) => setYeniUrun({ ...yeniUrun, fiyat: e.target.value })}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Stok Adedi</label>
-                    <input
-                      type="number"
-                      className="form-control bg-dark text-white border-secondary"
-                      required
-                      onChange={(e) => setYeniUrun({ ...yeniUrun, stok: parseInt(e.target.value, 10) || 0 })}
-                    />
-                  </div>
-                </div>
-                <div className="modal-footer border-secondary">
-                  <button type="button" className="btn btn-outline-secondary" onClick={() => setModalAcik(false)}>
-                    İptal
-                  </button>
-                  <button type="submit" className="btn btn-warning px-4 fw-bold">Kaydet</button>
-                </div>
-              </form>
+        <section className="surface-card">
+          <p className="eyebrow">Hızlı ekleme</p>
+          <h3>Yeni ürün oluştur</h3>
+          <form className="stack-form" onSubmit={urunEkle}>
+            <div>
+              <label className="field-label">Ürün adı</label>
+              <input className="field-input" onChange={(e) => setYeniUrun({ ...yeniUrun, ad: e.target.value })} required />
             </div>
-          </div>
-        </div>
+            <div>
+              <label className="field-label">Kategori</label>
+              <select className="field-select" onChange={(e) => setYeniUrun({ ...yeniUrun, kategori: e.target.value })}>
+                <option value="Ana Yemek">Ana Yemek</option>
+                <option value="Çorba">Çorba</option>
+                <option value="Tatlı">Tatlı</option>
+                <option value="İçecek">İçecek</option>
+              </select>
+            </div>
+            <div>
+              <label className="field-label">Fiyat</label>
+              <input className="field-input" type="number" onChange={(e) => setYeniUrun({ ...yeniUrun, fiyat: e.target.value })} required />
+            </div>
+            <div>
+              <label className="field-label">Stok adedi</label>
+              <input
+                className="field-input"
+                type="number"
+                onChange={(e) => setYeniUrun({ ...yeniUrun, stok: parseInt(e.target.value, 10) || 0 })}
+                required
+              />
+            </div>
+            <div className="split-actions">
+              <button className="action-button" type="submit">Kaydet</button>
+              <button className="ghost-button" type="button" onClick={() => setModalAcik(false)}>Vazgeç</button>
+            </div>
+          </form>
+        </section>
       )}
     </div>
   );
