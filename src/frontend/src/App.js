@@ -1,38 +1,40 @@
 import React from "react";
-// Link'i import etmeyi unutmamalıyız, main dalındaki navigasyon bunu kullanıyor
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
-// Diğer bileşenlerin import edildiğinden emin ol
+import KullaniciYonetimi from "./pages/KullaniciYonetimi";
+import LoginPage from "./pages/LoginPage";
+import MasaPlani from "./pages/MasaPlani";
 import MenuYonetimi from "./pages/MenuYonetimi";
 import RaporEkrani from "./pages/RaporEkrani";
-import LoginPage from "./pages/LoginPage"; 
-import KullaniciYonetimi from "./pages/KullaniciYonetimi"; 
 
 function App() {
+  const navLinkStyle = {
+    color: "white",
+    marginRight: "20px",
+    textDecoration: "none",
+  };
+
   return (
     <BrowserRouter>
-      {/* Üst Menü (Sayfalar arası gezinebilmen için geçici olarak duruyor) */}
-      <nav style={{ padding: '15px', background: '#2C3E50', marginBottom: '20px' }}>
-        <Link to="/" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>🚪 Giriş (Login)</Link>
-        <Link to="/kullanici" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>👥 Kullanıcı Yönetimi</Link>
-        <Link to="/menu" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>🍔 Menü Yönetimi</Link>
-        {/* Rapor ekranına da menüden gidilebilsin diye buraya bir link ekledim */}
-        <Link to="/rapor" style={{ color: 'white', textDecoration: 'none' }}>📊 Rapor Ekranı</Link>
+      <nav style={{ padding: "15px", background: "#2C3E50", marginBottom: "20px" }}>
+        <Link to="/" style={navLinkStyle}>Giris (Login)</Link>
+        <Link to="/kullanici" style={navLinkStyle}>Kullanici Yonetimi</Link>
+        <Link to="/menu" style={navLinkStyle}>Menu Yonetimi</Link>
+        <Link to="/masalar" style={navLinkStyle}>Masa Plani</Link>
+        <Link to="/rapor" style={{ color: "white", textDecoration: "none" }}>Rapor Ekrani</Link>
       </nav>
 
-      <div style={{ padding: '20px' }}>
+      <div style={{ padding: "20px" }}>
         <Routes>
-          {/* Ana sayfada LoginPage çıkacak */}
           <Route path="/" element={<LoginPage />} />
-          
           <Route path="/kullanici" element={<KullaniciYonetimi />} />
           <Route path="/menu" element={<MenuYonetimi />} />
-          
-          {/* Senin eklediğin Rapor Ekranı rotasını da buraya yerleştirdik */}
+          <Route path="/masalar" element={<MasaPlani />} />
           <Route path="/rapor" element={<RaporEkrani />} />
-          
-          {/* Giriş yap butonuna basınca gideceği Yönetim Paneli için geçici bir rota */}
-          <Route path="/yonetim" element={<h2 style={{textAlign: 'center'}}>Giriş Başarılı! Yönetim Paneli Yakında Eklenecek.</h2>} />
+          <Route
+            path="/yonetim"
+            element={<h2 style={{ textAlign: "center" }}>Giris basarili! Yonetim paneli yakinda eklenecek.</h2>}
+          />
         </Routes>
       </div>
     </BrowserRouter>

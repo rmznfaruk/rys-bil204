@@ -1,55 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const MasaPlani = () => {
   const navigate = useNavigate();
-  // Yusuf API'yi yazana kadar test verisi kullanıyoruz (Görseldeki talimat)
-  const [masalar, setMasalar] = useState([
-    { id: 101, kapasite: 4, durum: 'bos' },
-    { id: 102, kapasite: 2, durum: 'dolu' },
-    { id: 103, kapasite: 6, durum: 'rezerveli' },
-    { id: 104, kapasite: 4, durum: 'temizleniyor' },
+  const [masalar] = useState([
+    { id: 101, no: "Masa 101", durum: "bos", kapasite: 4 },
+    { id: 102, no: "Masa 102", durum: "dolu", kapasite: 2 },
+    { id: 103, no: "Masa 103", durum: "rezerveli", kapasite: 6 },
+    { id: 104, no: "Masa 104", durum: "temizleniyor", kapasite: 4 },
+    { id: 105, no: "Masa 105", durum: "bos", kapasite: 8 },
+    { id: 106, no: "Masa 106", durum: "dolu", kapasite: 2 },
   ]);
 
-  // Durumlara göre renkleri belirleyen fonksiyon (Görseldeki tablodan)
-  const getRenkler = (durum) => {
-    switch (durum) {
-      case 'bos': return { bg: '#D5F5E3', border: '#1E7E34' };
-      case 'dolu': return { bg: '#FADBD8', border: '#C0392B' };
-      case 'rezerveli': return { bg: '#FEF9E7', border: '#F39C12' };
-      case 'temizleniyor': return { bg: '#EEEEEE', border: '#888888' };
-      default: return { bg: '#FFFFFF', border: '#000000' };
-    }
+  const durumRengi = (durum) => {
+    if (durum === "bos") return "#28a745";
+    if (durum === "dolu") return "#dc3545";
+    if (durum === "rezerveli") return "#ffc107";
+    return "#6c757d";
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2 style={{ color: '#1E7E34' }}>Masa Planı</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '20px' }}>
-        {masalar.map(masa => {
-          const renk = getRenkler(masa.durum);
-          return (
-            <div 
-              key={masa.id} 
-              // Görseldeki yönlendirme kuralı: /siparis?masaId=X
-              onClick={() => navigate(`/siparis?masaId=${masa.id}`)}
-              style={{
-                backgroundColor: renk.bg,
-                border: `3px solid ${renk.border}`,
-                borderRadius: '12px',
-                padding: '20px',
-                textAlign: 'center',
-                cursor: 'pointer',
-                transition: 'transform 0.2s'
-              }}
-            >
-              {/* Görseldeki format: Büyük masa no, kapasite, büyük harf durum */}
-              <h1 style={{ margin: 0, fontSize: '2.5rem' }}>{masa.id}</h1>
-              <p style={{ margin: '5px 0' }}>Kapasite: {masa.kapasite}</p>
-              <h3 style={{ margin: 0, textTransform: 'uppercase' }}>{masa.durum}</h3>
+    <div style={{ backgroundColor: "#121212", minHeight: "100vh", padding: "40px", color: "white" }}>
+      <div className="container">
+        <div className="d-flex justify-content-between align-items-center mb-5">
+          <h1 className="fw-bold text-warning display-4">Masa Plani</h1>
+          <div className="d-flex gap-3">
+            <span className="badge bg-success">Bos</span>
+            <span className="badge bg-danger">Dolu</span>
+            <span className="badge bg-warning text-dark">Rezerveli</span>
+            <span className="badge bg-secondary">Temizleniyor</span>
+          </div>
+        </div>
+
+        <div className="row g-4">
+          {masalar.map((masa) => (
+            <div key={masa.id} className="col-md-3 col-6">
+              <div
+                className="card shadow-lg border-0 text-center p-4"
+                style={{
+                  backgroundColor: "#1a1a1a",
+                  cursor: "pointer",
+                  borderTop: `8px solid ${durumRengi(masa.durum)}`,
+                  transition: "transform 0.2s",
+                }}
+                onClick={() => navigate(`/siparis?masaId=${masa.id}`)}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = "scale(1.05)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+              >
+                <h3 className="text-white mb-2">{masa.no}</h3>
+                <p className="text-muted mb-3">{masa.kapasite} Kisilik</p>
+                <div className="fw-bold text-uppercase" style={{ color: durumRengi(masa.durum) }}>
+                  {masa.durum}
+                </div>
+              </div>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </div>
   );
