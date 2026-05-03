@@ -43,3 +43,6 @@ app.listen(PORT, () => {
 module.exports = app;
 
 app.use('/api/orders', require('./routes/orders')); //Yusuf ekledi
+
+const paymentsRouter = require('./routes/payments');
+app.use('/api/payments', paymentsRouter); //Yusuf ekledi
